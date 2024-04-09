@@ -1,8 +1,5 @@
 package com.example.api.model;
 
-import lombok.Getter;
-
-@Getter
 public class ProdutoModel {
 
     private String tipoProduto;
@@ -14,5 +11,10 @@ public class ProdutoModel {
     public String getTipoProduto(){
         return this.tipoProduto;
     }
+
+    public void setTipoProduto(String tipoProduto) {
+        this.tipoProduto = tipoProduto;
+    }
 }
+
 
