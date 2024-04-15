@@ -12,33 +12,36 @@ public class ProdutoController
 
     private List<ProdutoModel> produtoModelList = new ArrayList<>();
 
-    @PostMapping("/produto")
+    @PostMapping("/produtos")
     public ProdutoModel createProduto(@RequestBody String tipoProduto){
-        var produto1 = new ProdutoModel(tipoProduto);
-        produtoModelList.add(produto1);
-        return produto1;
+        var produto = new ProdutoModel(tipoProduto);
+        produtoModelList.add(produto);
+        return produto;
     }
 
-    @GetMapping("/produto")
+    @GetMapping("/produtos")
+
     public List<ProdutoModel> readProdutos(){
         return produtoModelList;
     }
 
-    @GetMapping("/produto2")
-    public int readProduto() {
-        var bicicleta = new ProdutoModel("camiseta");
-        return produtoModelList.indexOf(bicicleta);
+    @GetMapping("/produtos/{index}")
+    public ProdutoModel readProduto(@PathVariable int index) {
+        var produto = produtoModelList.get(index);
+        return produto;
     }
 
-//    @PutMapping("/produto")
-//    public ProdutoModel putProduto(){
-//        var produtoAntigo = readProduto();
-//        produtoAntigo.setTipoProduto("tenis");
-//        return produtoAntigo;
-//    }
+    @PutMapping("/produtos/{index}")
+    public ProdutoModel putProduto(@PathVariable int index, @RequestBody String tipoProduto){
+       var produto = new ProdutoModel(tipoProduto);
+       produtoModelList.set(index, produto);
+       return produto;
+    }
 
-//    public ProdutoModel deleteProduto(){
-//
-//    }
+    @DeleteMapping("/produtos/{index}")
+    public ProdutoModel deleteProduto(@PathVariable int index) {
+        var produtoDeletado = produtoModelList.remove(index);
+        return produtoDeletado;
+    }
 }
 
