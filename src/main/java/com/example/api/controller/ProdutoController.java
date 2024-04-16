@@ -1,47 +1,45 @@
 package com.example.api.controller;
 
-import com.example.api.model.ProdutoModel;
-import com.example.api.service.ProdutoService;
+import com.example.api.model.CategoriaProdutoModel;
+import com.example.api.service.CategoriaProdutoService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 public class ProdutoController
 {
-    private ProdutoService produtoService;
+    private CategoriaProdutoService categoriaProdutoService;
 
-    public ProdutoController(ProdutoService produtoService) {
-        this.produtoService = produtoService;
+    public ProdutoController(CategoriaProdutoService categoriaProdutoService) {
+        this.categoriaProdutoService = categoriaProdutoService;
     }
 
     @PostMapping("/produtos")
-    public ProdutoModel createProduto(@RequestBody String tipoProduto) throws Exception {
-        var produto = new ProdutoModel(tipoProduto);
-        produtoService.saveProduto(produto);
-        return produto;
+    public CategoriaProdutoModel postProduto(@RequestBody String nomeCategoria) throws Exception {
+        var categoriaProdutoModel = new CategoriaProdutoModel(nomeCategoria);
+        return categoriaProdutoService.process(categoriaProdutoModel);
     }
 
     @GetMapping("/produtos")
-    public List<ProdutoModel> readProdutos(){
-        return produtoService.getAllProdutos();
+    public List<CategoriaProdutoModel> getProdutos(){
+        return categoriaProdutoService.getAllProdutos();
     }
 
     @GetMapping("/produtos/{index}")
-    public ProdutoModel readProduto(@PathVariable int index) {
-        return produtoService.getByIndex(index);
+    public CategoriaProdutoModel getProdutoByIndex(@PathVariable Integer index) {
+        return categoriaProdutoService.getByIndex(index);
     }
 
     @PutMapping("/produtos/{index}")
-    public ProdutoModel putProduto(@PathVariable int index, @RequestBody String tipoProduto){
-       var produto = new ProdutoModel(tipoProduto);
-       return produtoService.updateProduto(index, produto);
+    public CategoriaProdutoModel putProduto(@PathVariable Integer index, @RequestBody String tipoProduto){
+       var produto = new CategoriaProdutoModel(tipoProduto);
+       return categoriaProdutoService.updateProduto(index, produto);
     }
 
     @DeleteMapping("/produtos/{index}")
-    public ProdutoModel deleteProduto(@PathVariable int index) {
-        return produtoService.deleteProduto(index);
+    public void deleteProduto(@PathVariable Integer index) {
+        categoriaProdutoService.deleteProduto(index);
     }
 }
 
