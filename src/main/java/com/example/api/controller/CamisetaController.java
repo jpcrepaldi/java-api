@@ -1,8 +1,13 @@
 package com.example.api.controller;
 
 
+import com.example.api.exceptions.ApiException;
 import com.example.api.model.CamisetaModel;
 import com.example.api.service.CamisetaService;
+import org.apache.coyote.Response;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,28 +22,37 @@ public class CamisetaController {
     }
 
     @PostMapping("/camisetas")
-    public CamisetaModel postCamiseta(@RequestBody CamisetaModel camisetaModel) {
-        return camisetaService.processCamiseta(camisetaModel);
+    public ResponseEntity<CamisetaModel> postCamiseta(@RequestBody CamisetaModel camisetaModel) throws ApiException {
+        var camiseta = camisetaService.processCamiseta(camisetaModel);
+
+        return new ResponseEntity<CamisetaModel>(camiseta, HttpStatus.CREATED);
     }
 
     @GetMapping("/camisetas/{id}")
-    public CamisetaModel getCamiseta(@PathVariable Integer id) {
-        return camisetaService.getCamisetaByIndex(id);
+    public ResponseEntity<CamisetaModel> getCamiseta(@PathVariable Integer id) throws ApiException {
+        var camiseta = camisetaService.getCamisetaByIndex(id);
 
+        return new ResponseEntity<>(camiseta, HttpStatus.OK);
     }
 
     @GetMapping("/camisetas")
-    public List<CamisetaModel> getAllCamiseta() {
-        return camisetaService.getCamisetas();
+    public ResponseEntity<List<CamisetaModel>> getAllCamiseta() throws ApiException {
+        var camisetas = camisetaService.getCamisetas();
+
+        return new ResponseEntity<>(camisetas, HttpStatus.OK);
     }
 
     @PutMapping("/camisetas/{id}")
-    public CamisetaModel putCamiseta(@PathVariable Integer id, @RequestBody CamisetaModel camisetaModel) {
-        return camisetaService.updateCamiseta(id, camisetaModel);
+    public ResponseEntity<CamisetaModel> putCamiseta(@PathVariable Integer id, @RequestBody CamisetaModel camisetaModel) throws ApiException {
+        var camiseta = camisetaService.updateCamiseta(id, camisetaModel);
+
+        return new ResponseEntity<>(camiseta, HttpStatus.OK);
     }
 
     @DeleteMapping("/camisetas/{id}")
-    public void deleteCamiseta(@PathVariable Integer id) throws Exception {
+    public ResponseEntity<Void> deleteCamiseta(@PathVariable Integer id) throws ApiException {
         camisetaService.deleteCamiseta(id);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

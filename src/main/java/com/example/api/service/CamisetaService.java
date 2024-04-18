@@ -1,9 +1,9 @@
 package com.example.api.service;
 
 import com.example.api.entities.CamisetaEntity;
+import com.example.api.exceptions.ApiException;
 import com.example.api.model.CamisetaModel;
 import com.example.api.repository.CamisetaRepository;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,7 +18,12 @@ public class CamisetaService {
         this.camisetaRepository = camisetaRepository;
     }
 
-    public CamisetaModel processCamiseta(CamisetaModel camisetaModel) {
+    public CamisetaModel processCamiseta(CamisetaModel camisetaModel) throws ApiException {
+
+        if (camisetaModel.getPreco() < 0.0) {
+            throw new ApiException(422, "Preco não pode ser menor que zero");
+        }
+
         var camisetaEntity = new CamisetaEntity();
         camisetaEntity.setCor(camisetaModel.getCor());
         camisetaEntity.setTipoCamiseta(camisetaModel.getTipoCamiseta());
@@ -32,13 +37,16 @@ public class CamisetaService {
         return resultado;
     }
 
-    public List<CamisetaModel> getCamisetas() {
+    public List<CamisetaModel> getCamisetas() throws ApiException {
+
         var camisetaEntityList = camisetaRepository.findAll();
+
+        if (camisetaEntityList.isEmpty())
+            throw new ApiException(404, "Não existe camisetas na base");
+
         var camisetaModelList = new ArrayList<CamisetaModel>();
 
-        for (int i = 0; i < camisetaEntityList.size(); i++) {
-
-            var camisetaEntity = camisetaEntityList.get(i);
+        for (CamisetaEntity camisetaEntity : camisetaEntityList) {
 
             var camisetaModel = new CamisetaModel(camisetaEntity.getTipoCamiseta(), camisetaEntity.getPreco(),
                     camisetaEntity.getCor(), camisetaEntity.getTamanho(), camisetaEntity.getTecido());
@@ -49,7 +57,7 @@ public class CamisetaService {
         return camisetaModelList;
     }
 
-    public CamisetaModel getCamisetaByIndex(Integer id) {
+    public CamisetaModel getCamisetaByIndex(Integer id) throws ApiException {
         var camisetaEntityOptional = camisetaRepository.findById(id);
 
         if (camisetaEntityOptional.isPresent()) {
@@ -60,10 +68,10 @@ public class CamisetaService {
             return camisetaModel;
         }
 
-        return null;
+        throw new ApiException(404, "Não existe camiseta com esse id");
     }
 
-    public CamisetaModel updateCamiseta(Integer id, CamisetaModel novaCamisetaModel) {
+    public CamisetaModel updateCamiseta(Integer id, CamisetaModel novaCamisetaModel) throws ApiException {
         var camisetaEntityOptional = camisetaRepository.findById(id);
 
         if (camisetaEntityOptional.isPresent()) {
@@ -83,15 +91,15 @@ public class CamisetaService {
             return camisetaModel;
         }
 
-        return null;
+        throw new ApiException(404, "Não existe camiseta com esse id");
     }
 
-    public void deleteCamiseta(Integer id) throws Exception {
+    public void deleteCamiseta(Integer id) throws ApiException {
         var camisetaEntityOptional = camisetaRepository.findById(id);
-        if (camisetaEntityOptional.isPresent()) {
-            camisetaRepository.deleteById(id);
-        } else {
-            throw new Exception("não existe");
+        if (camisetaEntityOptional.isEmpty()) {
+            throw new ApiException(404, "Não existe camiseta com esse id");
         }
+
+        camisetaRepository.deleteById(id);
     }
 }
